@@ -159,24 +159,33 @@ This section explains how to create and preprocess both the **article collection
     .venv\Scripts\activate
     ```    
 3. **Install Dependencies**
-    Make sure to install the required dependencies before running the app.
+Make sure to install the required dependencies before running the app.
     ```bash
     pip install -r requirements.txt
     ```
 4. **Run app**
-    Make sure run the command in `BountyChromaDB` directory and `venv` is active.
+Make sure run the command in `BountyChromaDB` directory and `venv` is active.
     ```bash
     python app.py
     ```
 5. **Open The HTML Page**
-    You can use extension **live server(optional)** or open the html in your browser.
+You can use extension **live server(optional)** or open the html in your browser.
 
 6. **Enter Query**
     Enter Your Query in form input then click submit.
 
 ### Image Overview 
 1. **Text Query** 
-    
+![Text Query](https://github.com/retno2777/BountyChromaDB/blob/main/assetReadme/Text_search.png)
+
+2. **Image Query**
+![Image Query](https://github.com/retno2777/BountyChromaDB/blob/main/assetReadme/Image_search.png)
+
+3. **Text Query Result**
+![Text Query Result](https://github.com/retno2777/BountyChromaDB/blob/main/assetReadme/Text_result.png)
+
+3. **Image Qeery Result**
+![Image Query Result](https://github.com/retno2777/BountyChromaDB/blob/main/assetReadme/Image_result.png)
 
 
 
