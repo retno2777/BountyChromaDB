@@ -165,20 +165,20 @@ This section explains how to create and preprocess both the **article collection
     python3 -m venv .venv
     .venv\Scripts\activate
     ```    
-3. **Install Dependencies**
+3. **Install Dependencies**<br />
 Make sure to install the required dependencies before running the app.
     ```bash
     pip install -r requirements.txt
     ```
-4. **Run app**
+4. **Run app** <br />
 Make sure run the command in `BountyChromaDB` directory and `venv` is active.
     ```bash
     python app.py
     ```
-5. **Open The HTML Page**
+5. **Open The HTML Page** <br />
 You can use extension **live server(optional)** or open the html in your browser.
 
-6. **Enter Query**
+6. **Enter Query**<br />
     Enter Your Query in form input then click submit.
 
 ### Image Overview 
