@@ -23,5 +23,3 @@ Thumbs.db
 
 # Abaikan folder venv (virtual environment Python)
 .venv/
-
-image_rgb
