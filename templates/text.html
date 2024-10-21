@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromaDB Text Search</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>ChromaDB Text Search</h1>
+
+        <form id="text-search-form">
+            <input type="text" name="query" placeholder="Enter your search query" id="text-query" required>
+            <select name="distance_type" id="text-distance-type">
+                <option value="cosine">Cosine</option>
+                <option value="l2">L2</option>
+            </select>
+            <button type="submit">Search Text</button>
+        </form>
+
+        <div id="example-queries" class="example-queries">
+            <h3>Example Queries:</h3>
+            <ul>
+                <li><a href="#" class="example-query">Machine learning advancements in 2023</a></li>
+                <li><a href="#" class="example-query">Best practices for deep learning models</a></li>
+                <li><a href="#" class="example-query">Natural language processing techniques</a></li>
+            </ul>
+        </div>
+
+        <p><a href="image.html">Switch to Image Search</a></p>
+
+        <p id="query-time"></p>
+
+        <div id="image-results" class="grid-item-image">
+            <h2>Images</h2>
+        </div>
+
+        <div class="grid-container">
+            <div id="article-results" class="grid-item">
+                <h2>Articles</h2>
+            </div>
+
+            <div id="youtube-results" class="grid-item">
+                <h2>YouTube Videos</h2>
+            </div>
+        </div>
+
+        <p id="error-message" style="color: red;"></p>
+    </div>
+
+    <script>
+        const exampleQueryLinks = document.querySelectorAll('.example-query');
+        exampleQueryLinks.forEach(queryElement => {
+            queryElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                const queryText = e.target.textContent;
+                document.getElementById('text-query').value = queryText;
+            });
+        });
+
+        const handleTextSearch = async (e) => {
+            e.preventDefault();
+            console.log(e)
+            console.log('Handling text search');
+
+            const formData = new FormData(e.target);
+            document.getElementById('error-message').textContent = '';
+            document.getElementById('query-time').textContent = 'Searching...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/search', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+                displayResults(data.results, data.query_time);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+                document.getElementById('error-message').textContent = `Error: ${error.message}`;
+                document.getElementById('query-time').textContent = '';
+            }
+        };
+
+        document.getElementById('text-search-form').addEventListener('submit', handleTextSearch);
+
+        function displayResults(results, queryTime) {
+            console.log('Displaying results');
+            const articleResultsDiv = document.getElementById('article-results');
+            const youtubeResultsDiv = document.getElementById('youtube-results');
+            const imageResultsDiv = document.getElementById('image-results');
+            const queryTimeElement = document.getElementById('query-time');
+
+            articleResultsDiv.innerHTML = '<h2>Articles</h2>';
+            youtubeResultsDiv.innerHTML = '<h2>YouTube Videos</h2>';
+            imageResultsDiv.innerHTML = '<h2>Images</h2>';
+            queryTimeElement.textContent = `Query completed in ${queryTime} seconds`;
+
+            results.forEach(result => {
+                if (result.type === 'article') {
+                    const articleItem = document.createElement('div');
+                    articleItem.classList.add('result-item');
+                    articleItem.innerHTML = `
+                        <h3>${result.title}</h3>
+                        <p>Similarity: ${result.similarity}</p>
+                        <div class="embed-url">
+                            <embed type="text/html" src="${result.url}" width="500" height="300">
+                            <a href="${result.url}" target="_blank">Read Full Article</a>
+                        </div>
+                    `;
+                    articleResultsDiv.appendChild(articleItem);
+                } else if (result.type === 'youtube') {
+                    const youtubeItem = document.createElement('div');
+                    youtubeItem.classList.add('result-item');
+                    youtubeItem.innerHTML = `
+                        <h3>${result.title}</h3>
+                        <p>Similarity: ${result.similarity}</p>
+                        <div class="embed-video">
+                            <iframe width="100%" height="315" src="https://www.youtube.com/embed/${result.video_id}" 
+                                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                    youtubeResultsDiv.appendChild(youtubeItem);
+                } else if (result.type === 'image') {
+                    const imageItem = document.createElement('div');
+                    imageItem.classList.add('result-item');
+                    const imagePath = `../dataset/images/image_rgb/${result.image_path}`;
+                    imageItem.innerHTML = `
+                        <p>Similarity: ${result.similarity}</p>
+                        <img src="${imagePath}" alt="Image Result" style="max-width:100%; height:auto;">
+                    `;
+                    imageResultsDiv.appendChild(imageItem);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

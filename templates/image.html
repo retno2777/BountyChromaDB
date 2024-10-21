@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChromaDB Image Search</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>ChromaDB Image Search</h1>
+
+        <form id="image-search-form">
+            <label for="image-upload">Upload an image:</label>
+            <input type="file" name="image" id="image-upload" accept="image/*" required>
+            <select name="distance_type" id="image-distance-type">
+                <option value="cosine">Cosine</option>
+                <option value="l2">L2</option>
+            </select>
+            <button type="submit">Search Image</button>
+        </form>
+
+        <p><a href="text.html">Switch to Text Search</a></p>
+
+        <p id="query-time"></p>
+
+        <div id="image-results" class="grid-item-image">
+            <h2>Images</h2>
+        </div>
+
+        <div class="grid-container">
+            <div id="article-results" class="grid-item">
+                <h2>Articles</h2>
+            </div>
+
+            <div id="youtube-results" class="grid-item">
+                <h2>YouTube Videos</h2>
+            </div>
+        </div>
+
+        <p id="error-message" style="color: red;"></p>
+    </div>
+
+    <script>
+        const handleImageSearch = async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            document.getElementById('error-message').textContent = '';
+            document.getElementById('query-time').textContent = 'Searching...';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/search', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await response.json();
+                displayResults(data.results, data.query_time);
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+                document.getElementById('error-message').textContent = `Error: ${error.message}`;
+                document.getElementById('query-time').textContent = '';
+                alert(`Error: ${error.message}`);
+            }
+        };
+
+        document.getElementById('image-search-form').addEventListener('submit', handleImageSearch);
+        function displayResults(results, queryTime) {
+            const articleResultsDiv = document.getElementById('article-results');
+            const youtubeResultsDiv = document.getElementById('youtube-results');
+            const imageResultsDiv = document.getElementById('image-results');
+            const queryTimeElement = document.getElementById('query-time');
+
+            articleResultsDiv.innerHTML = '<h2>Articles</h2>';
+            youtubeResultsDiv.innerHTML = '<h2>YouTube Videos</h2>';
+            imageResultsDiv.innerHTML = '<h2>Images</h2>';
+            queryTimeElement.textContent = `Query completed in ${queryTime} seconds`;
+
+            results.forEach(result => {
+                if (result.type === 'article') {
+                    const articleItem = document.createElement('div');
+                    articleItem.classList.add('result-item');
+                    articleItem.innerHTML = `
+                        <h3>${result.title}</h3>
+                        <p>Similarity: ${result.similarity}</p>
+                        <div class="embed-url">
+                            <embed type="text/html" src="${result.url}" width="500" height="300">
+                            <a href="${result.url}" target="_blank">Read Full Article</a>
+                        </div>
+                    `;
+                    articleResultsDiv.appendChild(articleItem);
+                } else if (result.type === 'youtube') {
+                    const youtubeItem = document.createElement('div');
+                    youtubeItem.classList.add('result-item');
+                    youtubeItem.innerHTML = `
+                        <h3>${result.title}</h3>
+                        <p>Similarity: ${result.similarity}</p>
+                        <div class="embed-video">
+                            <iframe width="100%" height="315" src="https://www.youtube.com/embed/${result.video_id}" 
+                                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                    youtubeResultsDiv.appendChild(youtubeItem);
+                } else if (result.type === 'image') {
+                    const imageItem = document.createElement('div');
+                    imageItem.classList.add('result-item');
+                    const imagePath = `../dataset/images/image_rgb/${result.image_path}`;
+                    imageItem.innerHTML = `
+                        <p>Similarity: ${result.similarity}</p>
+                        <img src="${imagePath}" alt="Image Result" style="max-width:100%; height:auto;">
+                    `;
+                    imageResultsDiv.appendChild(imageItem);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

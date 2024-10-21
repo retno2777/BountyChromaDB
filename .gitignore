@@ -1,0 +1,27 @@
+# Abaikan file log
+*.log
+
+# Abaikan file compiled Python
+*.pyc
+__pycache__/
+
+# Abaikan direktori sementara atau build
+/uploads/
+/dist/
+/build/
+
+# Abaikan file konfigurasi editor
+.vscode/
+.idea/
+
+# Abaikan file environment
+.env
+
+# Abaikan file sistem operasi
+.DS_Store
+Thumbs.db
+
+# Abaikan folder venv (virtual environment Python)
+.venv/
+
+image_rgb
