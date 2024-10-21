@@ -196,7 +196,7 @@ You can use extension **live server(optional)** or open the html in your browser
 
 ## Demo Video
 
-![Demo Video](https://drive.google.com/file/d/1z_s3YmoIcOkAjzgW_3YHosTaq45JaET9/view?usp=sharing)
+[![Demo Video](https://drive.google.com/uc?id=1z_s3YmoIcOkAjzgW_3YHosTaq45JaET9)](https://drive.google.com/file/d/1z_s3YmoIcOkAjzgW_3YHosTaq45JaET9/view?usp=sharing)
 
 
 ## 🚀 Enhancements
