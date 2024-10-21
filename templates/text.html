@@ -63,8 +63,6 @@
 
         const handleTextSearch = async (e) => {
             e.preventDefault();
-            console.log(e)
-            console.log('Handling text search');
 
             const formData = new FormData(e.target);
             document.getElementById('error-message').textContent = '';
@@ -87,7 +85,6 @@
         document.getElementById('text-search-form').addEventListener('submit', handleTextSearch);
 
         function displayResults(results, queryTime) {
-            console.log('Displaying results');
             const articleResultsDiv = document.getElementById('article-results');
             const youtubeResultsDiv = document.getElementById('youtube-results');
             const imageResultsDiv = document.getElementById('image-results');

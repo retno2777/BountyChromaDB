@@ -81,3 +81,5 @@ def query_all_collections_with_image(image, top_k=1, distance_type='cosine'):
     search_results.sort(key=lambda x: x['similarity'], reverse=True)
 
     return search_results
+
+

@@ -52,21 +52,40 @@
             document.getElementById('query-time').textContent = 'Searching...';
 
             try {
+                // Gunakan AbortController untuk debugging
+                const controller = new AbortController();
+                const signal = controller.signal;
+
+                // Fetch request
                 const response = await fetch('http://127.0.0.1:5000/search', {
                     method: 'POST',
                     body: formData,
+                    signal: signal,  // Menambahkan sinyal AbortController
                 });
+
+                // Cek status respons sebelum mencoba mem-parsing JSON
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! Status: ${response.status}. ${errorText}`);
+                }
+
+                // Parsing JSON
                 const data = await response.json();
                 displayResults(data.results, data.query_time);
+
             } catch (error) {
-                console.error('There has been a problem with your fetch operation:', error);
-                document.getElementById('error-message').textContent = `Error: ${error.message}`;
-                document.getElementById('query-time').textContent = '';
-                alert(`Error: ${error.message}`);
+                if (error.name === 'AbortError') {
+                    console.error('Fetch aborted', error);
+                } else {
+                    console.error('There has been a problem with your fetch operation:', error);
+                    document.getElementById('error-message').textContent = `Error: ${error.message}`;
+                    document.getElementById('query-time').textContent = '';
+                }
             }
         };
 
         document.getElementById('image-search-form').addEventListener('submit', handleImageSearch);
+
         function displayResults(results, queryTime) {
             const articleResultsDiv = document.getElementById('article-results');
             const youtubeResultsDiv = document.getElementById('youtube-results');

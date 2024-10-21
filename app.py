@@ -1,21 +1,29 @@
 from flask import Flask, request, jsonify
 from util_config.query_utils_string import query_all_collections
 from util_config.query_utils_image import query_all_collections_with_image
-import time 
+import time
 from flask_cors import CORS
 import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-
 UPLOAD_FOLDER = 'uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+# Menangani preflight OPTIONS request
+@app.before_request
+def handle_options_request():
+    if request.method == 'OPTIONS':
+        # Mengembalikan response dengan header CORS yang tepat
+        response = app.make_response()
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+        return response
 
 @app.route('/search', methods=['POST'])
 def search():
@@ -30,7 +38,7 @@ def search():
         image_file = request.files['image']
         query_text = 'image query'
         distance_type = request.form.get('distance_type', 'cosine')
-        
+
         # Make sure the file is an image
         if image_file and allowed_file(image_file.filename):
             # Save the image temporarily in the uploads folder
@@ -42,7 +50,6 @@ def search():
 
             # Delete the image after it's used to save space
             os.remove(image_path)
-
         else:
             return jsonify({'error': 'Invalid file type. Only images are allowed.'}), 400
 
@@ -66,15 +73,19 @@ def search():
     query_time = time.time() - start_time
 
     # Create a JSON response with the results and query time
-    response_data = jsonify({
+    response_data = {
         'query': query_text,
         'distance_type': distance_type,
         'query_time': round(query_time, 4),
         'results': search_results
-    })
+    }
 
     # Return the query results in JSON format, including the query time
-    return response_data, 200
+    response = jsonify(response_data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response, 200
 
 def allowed_file(filename):
     """
